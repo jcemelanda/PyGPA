@@ -1,3 +1,3 @@
-from controle import controle
+from .controle import controle
 
 controle()

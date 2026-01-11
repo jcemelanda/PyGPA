@@ -1,5 +1,3 @@
+PyQt6
 matplotlib
 Pillow
-# PyQt4 is a legacy library and might not be easily installable via pip on modern systems.
-# Consider upgrading to PyQt5 or PyQt6 if possible.
-PyQt4
