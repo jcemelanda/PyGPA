@@ -1,7 +1,32 @@
-PyGPA
-=====
+Para utilizar o PyGPA istale as seguintes dependências:
 
-PyGPA is a python tool to use the GPA analysis method for data sets
+- Matplotib
+- PyQt4
+- PIL (Python Imaging Library)
+- Numpy
+- Python (versão 2.5 ou superior)
+
+Para execurar o software basta executar o pacote PyGPA.py
+
+No Linux, digite no terminal python PyGPA.py
+
+No Windows, clique duas vezes no pacote PyGPA.py
+
+As versões anteriores do PyGPA podem ser encontradas em https://sourceforge.net/p/pygpa/
+
+Changelog:
+
+PyGPA-0.2.2
+- Corrigido o posicionamento dos vetores dentro da área de plotagem
+
+PyGPA-0.2.1
+- Inserido comportamento nos botões da barra de ferramentas
+
+PyGPA-0.2:
+- Inserido menu Sobre
+
+PyGPA-0.1:
+- Primeira versão
 
 Copyright 2012 Julio Cesar Eiras Melanda
 

@@ -55,7 +55,7 @@ class controle:
         fd = QtGui.QFileDialog()
         file_path = fd.getOpenFileName(parent = None,
                                 caption = u'Abrir arquivo',
-        filter = u'Dados textuais (*.txt *.dat);;Imagens (*.png *.bmp *.jpg)')
+        filter = u'Imagens (*.png *.bmp *.jpg);;Dados textuais (*.txt *.dat)')
         if file_path[-3:] in ['png', 'jpg', 'bmp']:
             try:
                 im = Image.open(str(file_path), 'r')
@@ -86,13 +86,11 @@ class controle:
                 return
         else:
             try:
-                f = open(str(file_path), 'r')
+                file = open(str(file_path), 'r')
             except IOError as e:
                 print('Abertura de arquivo falhou ' + str(e))
                 return
-            supermatrix = []
-            matrix = []
-            mat_lines = f.readlines()
+            mat_lines = file.readlines()
             self.matriz = []
             dlg = QtGui.QProgressDialog(u'Lendo Arquivo', u'Cancelar',
                                         0, len(mat_lines))
@@ -104,27 +102,23 @@ class controle:
             a = 0
             if mat_lines[-1] == '':
                 mat_lines.pop()
-            for line in mat_lines:
-                if line == '\n':
-                    matrix.reverse()
-                    supermatrix.append(matrix[:])
-                    matrix = []
-                    continue
+            for line in mat_lines[:]:
                 row = line.strip('\n').split(' ')
                 if row[-1] == '':
-                    matrix.append([eval(e) for e in row[:-1]])
+                    self.matriz.append([eval(e) for e in row[:-1]])
                 else:
-                    matrix.append([eval(e) for e in row])
-                    a += 1
+                    self.matriz.append([eval(e) for e in row])
+                dlg.setValue(a)
+                a += 1
                 if dlg.wasCanceled():
                     return
-            matrix.reverse()
-            supermatrix.append(matrix[:])
-            
             dlg.close()
             del(dlg)
             self.matriz.reverse()
-            f.close()
+            file.close()
+        self.ui.act_gerar_vetores.setEnabled(True)
+        self.ui.act_anular.setEnabled(False)
+        self.ui.act_triangular.setEnabled(False)
 
     def triangular(self):
         '''
@@ -159,7 +153,7 @@ class controle:
         self.ui.axes.set_xlim(minx, len(self.dx[0]) + maxx)
         self.ui.axes.set_ylim(miny, len(self.dx) + maxy)
         self.ui.axes.triplot(t)
-        self.ui.widget_delaunay.draw()
+        self.ui.widget_desenho.draw()
 
         dlg = QtGui.QMessageBox()
         dlg.setText(u'Ga = %.6f' % ((len(t.edges) - len(x)) / float(len(x))))
@@ -199,7 +193,7 @@ class controle:
         self.ui.axes.quiverkey(q, 0, miny - 2, 1, '', coordinates = 'data')
         self.ui.axes.set_xlim(minx, len(self.dx[0]) + maxx)
         self.ui.axes.set_ylim(miny, len(self.dx) + maxy)
-        self.ui.widget_delaunay.draw()
+        self.ui.widget_desenho.draw()
 
     def normaliza_derivadas(self):
 
