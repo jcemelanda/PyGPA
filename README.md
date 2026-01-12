@@ -6,27 +6,19 @@ Para utilizar o PyGPA instale as seguintes dependências:
 - Numpy
 - Python (versão 3.8 ou superior)
 
-Para instalar as dependências, execute:
+Para execurar o software basta executar o pacote PyGPA.py
 
-```bash
-pip install -r requirements.txt
-```
+No Linux, digite no terminal python PyGPA.py
 
-Para executar o software basta executar o pacote PyGPA
-
-No Linux, digite no terminal:
-
-```bash
-python3 -m PyGPA
-# ou
-python3 __main__.py
-```
-
-No Windows, clique duas vezes no arquivo `__main__.py`
+No Windows, clique duas vezes no pacote PyGPA.py
 
 As versões anteriores do PyGPA podem ser encontradas em https://sourceforge.net/p/pygpa/
 
 Changelog:
+
+PyGPA-1.0.0
+- Atualizado para python 3.8+
+- Migrado para o Github
 
 PyGPA-0.2.2
 - Corrigido o posicionamento dos vetores dentro da área de plotagem
