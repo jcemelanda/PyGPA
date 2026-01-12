@@ -1,16 +1,28 @@
-Para utilizar o PyGPA istale as seguintes dependências:
+Para utilizar o PyGPA instale as seguintes dependências:
 
-- Matplotib
-- PyQt4
-- PIL (Python Imaging Library)
+- Matplotlib
+- PyQt6
+- Pillow (Python Imaging Library)
 - Numpy
-- Python (versão 2.5 ou superior)
+- Python (versão 3.8 ou superior)
 
-Para execurar o software basta executar o pacote PyGPA.py
+Para instalar as dependências, execute:
 
-No Linux, digite no terminal python PyGPA.py
+```bash
+pip install -r requirements.txt
+```
 
-No Windows, clique duas vezes no pacote PyGPA.py
+Para executar o software basta executar o pacote PyGPA
+
+No Linux, digite no terminal:
+
+```bash
+python3 -m PyGPA
+# ou
+python3 __main__.py
+```
+
+No Windows, clique duas vezes no arquivo `__main__.py`
 
 As versões anteriores do PyGPA podem ser encontradas em https://sourceforge.net/p/pygpa/
 

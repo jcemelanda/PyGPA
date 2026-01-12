@@ -5,10 +5,10 @@ Created on 31/08/2011
 @author: julio
 '''
 from GUI import ui_janela_principal
-from PyQt4 import QtGui
+from PyQt6.QtWidgets import QApplication, QMainWindow, QFileDialog, QProgressDialog, QMessageBox, QDialog
 from matplotlib import tri
 from os.path import expanduser
-import  Image
+from PIL import Image
 from time import time
 import sys
 
@@ -35,13 +35,13 @@ class controle:
         Inicializa a aplicação
         '''
 
-        app = QtGui.QApplication(sys.argv)
-        janela_principal = QtGui.QMainWindow()
+        app = QApplication(sys.argv)
+        janela_principal = QMainWindow()
         self.ui = ui_janela_principal(self)
         self.ui.setup_ui(janela_principal)
         janela_principal.showMaximized()
         self.matriz = []
-        sys.exit(app.exec_())
+        sys.exit(app.exec())
 
     def abrir_arquivo(self):
         '''
@@ -52,10 +52,10 @@ class controle:
         
         '''
         self.normalizado = False
-        fd = QtGui.QFileDialog()
+        fd = QFileDialog()
         file_path = fd.getOpenFileName(parent = None,
-                                caption = u'Abrir arquivo',
-        filter = u'Imagens (*.png *.bmp *.jpg);;Dados textuais (*.txt *.dat)')
+                                caption = 'Abrir arquivo',
+        filter = 'Imagens (*.png *.bmp *.jpg);;Dados textuais (*.txt *.dat)')[0]
         if file_path[-3:] in ['png', 'jpg', 'bmp']:
             try:
                 im = Image.open(str(file_path), 'r')
@@ -64,16 +64,15 @@ class controle:
                 im.show()
                 w, h = im.size
                 mat = []
-                dlg = QtGui.QProgressDialog(u'Lendo Arquivo', u'Cancelar',
+                dlg = QProgressDialog('Lendo Arquivo', 'Cancelar',
                                         0, h)
                 dlg.setModal(True)
                 dlg.setMinimumDuration(0)
-                dlg.setAutoClose(True)
-                dlg.setWindowTitle(u'Leitura de Arquivo')
+                dlg.setWindowTitle('Leitura de Arquivo')
                 dlg.show()
-                for i in xrange(h):
+                for i in range(h):
                     line = []
-                    for j in xrange(w):
+                    for j in range(w):
                         line.append(im.getpixel((j, i)))
                     mat.append(line)
                     dlg.setValue(i)
@@ -92,22 +91,18 @@ class controle:
                 return
             mat_lines = file.readlines()
             self.matriz = []
-            dlg = QtGui.QProgressDialog(u'Lendo Arquivo', u'Cancelar',
+            dlg = QProgressDialog('Lendo Arquivo', 'Cancelar',
                                         0, len(mat_lines))
             dlg.setModal(True)
             dlg.setMinimumDuration(0)
-            dlg.setAutoClose(True)
-            dlg.setWindowTitle(u'Leitura de Arquivo')
+            dlg.setWindowTitle('Leitura de Arquivo')
             dlg.show()
             a = 0
             if mat_lines[-1] == '':
                 mat_lines.pop()
             for line in mat_lines[:]:
-                row = line.strip('\n').split(' ')
-                if row[-1] == '':
-                    self.matriz.append([eval(e) for e in row[:-1]])
-                else:
-                    self.matriz.append([eval(e) for e in row])
+                row = line.strip().split(' ')
+                self.matriz.append([eval(e) for e in row])
                 dlg.setValue(a)
                 a += 1
                 if dlg.wasCanceled():
@@ -128,11 +123,11 @@ class controle:
         plota os triângulos e exibe o número de arestas encontradas.      
         
         '''
-        vects = [zip(x, y) for x, y in zip(self.dx, self.dy)]
+        vects = [list(zip(x, y)) for x, y in zip(self.dx, self.dy)]
         points = []
-        for i in xrange(len(vects)):
+        for i in range(len(vects)):
             line = []
-            for j in xrange(len(vects[0])):
+            for j in range(len(vects[0])):
                 x, y = vects[i][j]
                 if (abs(x) > 0.0) or (abs(y) > 0.0):
                     if [x + j, y + i] not in points:
@@ -142,8 +137,8 @@ class controle:
         x, y = zip(*points)
         t = tri.Triangulation(x, y)
         self.ui.axes.clear()
-        minx = round(min(zip(*self.dx)[0])) - 1
-        maxx = round(max(zip(*self.dx)[-1]))
+        minx = round(min(list(zip(*self.dx))[0])) - 1
+        maxx = round(max(list(zip(*self.dx))[-1]))
         miny = round(min(self.dy[0])) - 1
         maxy = round(max(self.dy[-1]))
         if miny >= 0:
@@ -155,16 +150,16 @@ class controle:
         self.ui.axes.triplot(t)
         self.ui.widget_desenho.draw()
 
-        dlg = QtGui.QMessageBox()
-        dlg.setText(u'Ga = %.6f' % ((len(t.edges) - len(x)) / float(len(x))))
-        dlg.setWindowTitle(u'Coeficiente de Assimetra')
+        dlg = QMessageBox()
+        dlg.setText('Ga = %.6f' % ((len(t.edges) - len(x)) / float(len(x))))
+        dlg.setWindowTitle('Coeficiente de Assimetra')
         dlg.setModal(True)
-        dlg.exec_()
+        dlg.exec()
         self.ui.act_gerar_vetores.setEnabled(False)
         self.ui.act_anular.setEnabled(False)
         self.ui.act_triangular.setEnabled(True)
 
-    def gerar_vetores(self, recalc = True):
+    def gerar_vetores(self, *args, recalc = True):
         '''
         gerar_vetores -> None
         
@@ -181,9 +176,8 @@ class controle:
 
         self.normaliza_derivadas()
         self.normalizado = True
-
         minx = -1
-        maxx = round(max(zip(*self.dx)[-1]))
+        maxx = round(max(list(zip(*self.dx))[-1]))
         miny = -1
         maxy = round(max(self.dy[-1]))
 
@@ -220,18 +214,17 @@ class controle:
         Coloca norma zero para os pares de vetores que se anulam.        
         
         '''
-        vects = [zip(x, y) for x, y in zip(self.dx, self.dy)]
-        dlg = QtGui.QProgressDialog(u'Otimizando campo', u'Cancelar',
+        vects = [list(zip(x, y)) for x, y in zip(self.dx, self.dy)]
+        dlg = QProgressDialog('Otimizando campo', 'Cancelar',
                                     0, len(vects))
         dlg.setModal(True)
         dlg.setMinimumDuration(0)
-        dlg.setAutoClose(True)
-        dlg.setWindowTitle(u'Eliminar vetores')
+        dlg.setWindowTitle('Eliminar vetores')
         dlg.show()
-        for i in xrange(len(vects)):
-            for j in xrange(len(vects[0])):
-                for k in xrange(i, len(vects)):
-                    for w in xrange(len(vects[0])):
+        for i in range(len(vects)):
+            for j in range(len(vects[0])):
+                for k in range(i, len(vects)):
+                    for w in range(len(vects[0])):
                         a = vects[i][j]
                         b = vects[k][w]
                         if a == (0, 0):
@@ -246,7 +239,7 @@ class controle:
         del(dlg)
         v = [zip(*l) for l in vects]
         self.dx, self.dy = zip(*v)
-        self.gerar_vetores(False)
+        self.gerar_vetores(recalc=False)
         self.ui.act_gerar_vetores.setEnabled(False)
         self.ui.act_anular.setEnabled(False)
         self.ui.act_triangular.setEnabled(True)
@@ -261,17 +254,16 @@ class controle:
         
         '''
         dx = []
-        dlg = QtGui.QProgressDialog(u'Calculando dx', u'Cancelar',
+        dlg = QProgressDialog('Calculando dx', 'Cancelar',
                                     0, len(self.matriz[:-1]))
         dlg.setModal(True)
         dlg.setMinimumDuration(0)
-        dlg.setAutoClose(True)
-        dlg.setWindowTitle(u'Cálculo da derivada')
+        dlg.setWindowTitle('Cálculo da derivada')
         dlg.show()
         a = 0
         for linha in self.matriz[:]:
             linha_dx = []
-            for i in xrange(len(linha)):
+            for i in range(len(linha)):
                 if i == 0:
                     linha_dx.append(
                                 (-3 * linha[0] + 4 * linha[1] - linha[2]) / 2.0)
@@ -298,17 +290,16 @@ class controle:
         
         '''
         dy = []
-        dlg = QtGui.QProgressDialog(u'Calculando dy', u'Cancelar',
+        dlg = QProgressDialog('Calculando dy', 'Cancelar',
                                     0, len(self.matriz[:-1]))
         dlg.setModal(True)
         dlg.setMinimumDuration(0)
-        dlg.setAutoClose(True)
-        dlg.setWindowTitle(u'Cálculo da derivada')
+        dlg.setWindowTitle('Cálculo da derivada')
         dlg.show()
         a = 0
         for linha in zip(*self.matriz[:]):
             linha_dy = []
-            for i in xrange(len(linha)):
+            for i in range(len(linha)):
                 if i == 0:
                     linha_dy.append(
                                 (-3 * linha[0] + 4 * linha[1] - linha[2]) / 2.0)
@@ -323,4 +314,4 @@ class controle:
             if dlg.wasCanceled():
                 return
         dlg.close()
-        return zip(*dy)
+        return list(zip(*dy))
